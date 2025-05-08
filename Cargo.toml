@@ -1,0 +1,17 @@
+[package]
+name = "tmpmulticast"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "daemon"
+path = "src/daemon.rs"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
+
+[dependencies]
+socket2 = {version =  "0.5.9", features = ["all"] }
+tokio = { version = "1.45.0", features = ["full"] }
