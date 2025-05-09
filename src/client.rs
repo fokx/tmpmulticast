@@ -1,6 +1,7 @@
 use socket2::{Domain, Protocol, Socket, Type};
 use std::net::{Ipv4Addr, SocketAddrV4};
 use std::sync::Arc;
+use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -12,11 +13,15 @@ async fn main() -> std::io::Result<()> {
     socket.join_multicast_v4(&addr, &Ipv4Addr::UNSPECIFIED)?;
     socket.bind(&SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, port).into())?;
     let udp = Arc::new(tokio::net::UdpSocket::from_std(socket.into())?);
-
-    udp
-        .send_to(b"hello world", (addr, port))
-        .await
-        .expect("cannot send message to socket");
+    let mut count = 0;
+    loop {
+        udp
+                .send_to(&*(format!("{}", count).into_bytes()), (addr, port))
+                .await
+                .expect("cannot send message to socket");
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        count += 1;
+    }
 
     Ok(())
 }
