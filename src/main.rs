@@ -28,11 +28,11 @@ async fn prepare_upload_handler(Query(pin): Query<Option<String>>, Json(payload)
     println!("Payload: {:?}", payload);
 
     // Generate session ID and file tokens
-    let session_id = format!("mySessionId"); // Replace with actual session ID generation logic
+    let session_id = format!("mySessionId"); // Replace it with actual session ID generation logic
     let mut files_tokens = HashMap::new();
 
     for (file_id, _) in &payload.files.files {
-        let token = format!("token_for_{}", file_id); // Replace with actual token generation logic
+        let token = format!("token_for_{}", file_id); // Replace it with actual token generation logic
         files_tokens.insert(file_id.clone(), token);
     }
 
