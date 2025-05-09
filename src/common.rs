@@ -1,6 +1,6 @@
 // src/common.rs
 use socket2::{Domain, Protocol, Socket, Type};
-use std::net::{Ipv4Addr, SocketAddrV4};
+use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 use std::sync::Arc;
 use rcgen::{Certificate, KeyPair};
 use serde::Serialize;
@@ -24,7 +24,13 @@ pub fn create_udp_socket(port: u16) -> std::io::Result<Arc<tokio::net::UdpSocket
     socket.set_nonblocking(true)?;
     let addr = "224.0.0.48".parse().unwrap();
     socket.join_multicast_v4(&addr, &Ipv4Addr::UNSPECIFIED)?;
+    #[cfg(not(windows))]
     socket.bind(&SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, port).into())?;
+    #[cfg(windows)]
+    let addr = SocketAddr::new(Ipv4Addr::new(0, 0, 0, 0).into(), port);
+    #[cfg(windows)]
+    socket.bind(&socket2::SockAddr::from(addr));
+    
     Ok(Arc::new(tokio::net::UdpSocket::from_std(socket.into())?))
 }
 
